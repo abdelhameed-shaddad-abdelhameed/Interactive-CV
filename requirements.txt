@@ -1,1 +1,5 @@
-langchain, langchain-community, pypdf, chromadb, sentence-transformers
+langchain
+langchain-community
+pypdf
+chromadb
+sentence-transformers
