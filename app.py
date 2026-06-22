@@ -41,7 +41,7 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 16px;
         padding: 24px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .glass-card:hover {
@@ -158,7 +158,14 @@ with tab1:
             <p>A multi-tenant live market intelligence dashboard using Python and Streamlit, featuring robust admin panels, tier-based access control, and real-time data visualization.</p>
         </div>
         """, unsafe_allow_html=True)
-        st.link_button("View Code on GitHub 🐙", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker-saas", key="btn1")
+        # تقسيم الزراير لمشروع الـ SaaS
+        btn_col1, btn_col2 = st.columns(2)
+        with btn_col1:
+            st.link_button("Code on GitHub 🐙", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker-saas", key="btn1")
+        with btn_col2:
+            st.link_button("View Live App 🌐", "https://whaletracker-saas-fjjtyqjg8fpn9kfy6eqh2s.streamlit.app/", key="live_btn1")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown("""
         <div class="glass-card">
@@ -175,7 +182,14 @@ with tab1:
             <p>Real-time digital asset monitoring engine built with Python and Streamlit for automated alert generation and secure data extraction.</p>
         </div>
         """, unsafe_allow_html=True)
-        st.link_button("View Code on GitHub 🐙", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker", key="btn3")
+        # تقسيم الزراير لمشروع الـ WhaleHunter
+        btn_col3, btn_col4 = st.columns(2)
+        with btn_col3:
+            st.link_button("Code on GitHub 🐙", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker", key="btn3")
+        with btn_col4:
+            st.link_button("View Live App 🌐", "https://whaletracker.streamlit.app/", key="live_btn3")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown("""
         <div class="glass-card">
