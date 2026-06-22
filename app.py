@@ -78,7 +78,7 @@ st.markdown("""
 # 3. إعداد الـ RAG وبناء الذاكرة (استخدام FAISS بدلاً من Chroma)
 @st.cache_resource
 def load_cv_knowledge():
-    cv_path = "ABDELHAMEED_MANSOUR_CV.pdf"
+    cv_path = "cv.pdf"
     if not os.path.exists(cv_path):
         return None
     
@@ -116,7 +116,7 @@ with st.sidebar:
     cv_file = "ABDELHAMEED SHADDAD MANSOUR.pdf"
     if os.path.exists(cv_file):
         with open(cv_file, "rb") as pdf_file:
-            st.download_button("📄 Download Resume (PDF)", data=pdf_file.read(), file_name="ABDELHAMEED SHADDAD MANSOUR.pdf", mime="application/octet-stream")
+            st.download_button("📄 Download Resume (PDF)", data=pdf_file.read(), file_name="cv.pdf", mime="application/octet-stream")
     else:
         st.warning(f"⚠️ Missing: {cv_file}")
 
@@ -213,7 +213,7 @@ with tab2:
             except Exception as e:
                 response = f"An error occurred while searching the document: {e}"
         else:
-            response = "I couldn't load the CV database. Please ensure 'ABDELHAMEED SHADDAD MANSOUR.pdf' is in the repository."
+            response = "I couldn't load the CV database. Please ensure 'cv.pdf' is in the repository."
 
         with st.chat_message("assistant"):
             st.markdown(response)
