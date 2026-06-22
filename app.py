@@ -199,36 +199,48 @@ with tab2:
     st.markdown("### 💬 Abdelhameed's AI Copilot")
     st.caption("I am an automated AI agent programmed with Abdelhameed's professional background. Ask me anything about his skills or experience!")
 
-    # تهيئة الذاكرة للشات
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Hello! 👋 I am Abdelhameed's AI assistant. Do you want to know about his **Skills**, **Experience**, or **Projects**?"}]
+ from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-    # عرض الرسايل القديمة
+# 1. تجهيز البيانات (مرة واحدة عند تشغيل التطبيق)
+@st.cache_resource
+def load_cv_knowledge():
+    loader = PyPDFLoader("ABDELHAMEED_MANSOUR_CV.pdf")
+    documents = loader.load()
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    texts = text_splitter.split_documents(documents)
+    # نستخدم نموذج مجاني للـ Embeddings
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    db = Chroma.from_documents(texts, embeddings)
+    return db
+
+db = load_cv_knowledge()
+
+# 2. الشات بوت الذكي
+with tab2:
+    st.markdown("### 🧠 AI RAG Assistant")
+    
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # استقبال سؤال جديد
-    if prompt := st.chat_input("Ask me about his LLM Evaluation experience or Python skills..."):
-        # عرض سؤال المستخدم
+    if prompt := st.chat_input("Ask anything about my experience..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # الرد الآلي
-        prompt_lower = prompt.lower()
-        if "skill" in prompt_lower or "tech" in prompt_lower or "python" in prompt_lower:
-            response = "Abdelhameed's core skills include **Python (Expert)**, **Prompt Engineering**, **LLM Evaluation (RLHF)**, **Playwright/Selenium**, and building **Streamlit** applications. He is also proficient in SQL, C#, and API Integrations."
-        elif "experience" in prompt_lower or "work" in prompt_lower or "job" in prompt_lower or "ai" in prompt_lower:
-            response = "Currently, he operates as a **Senior AI QA Engineer** (Freelance) on platforms like Alignerr and Labelbox, focusing on advanced multi-turn technical prompting and evaluating models like Claude Code. He also works as a **Freelance Automation Engineer** optimizing processes by 40%."
-        elif "project" in prompt_lower or "portfolio" in prompt_lower or "whale" in prompt_lower:
-            response = "His key projects include **WhaleTracker SaaS** (multi-tenant architecture), **WhaleHunter Pro** (live market data monitoring), and an advanced **Python Web Automation bot**."
-        elif "contact" in prompt_lower or "email" in prompt_lower or "hire" in prompt_lower:
-            response = "You can reach him directly via email at **abdelhameed.m91@gmail.com** or call **+201069531984**. He is open to exploring AI and Python-related opportunities!"
-        else:
-            response = "I am specifically tuned to answer questions about Abdelhameed's professional background. Try asking me about his **Skills**, **Projects**, or **Experience**!"
-
-        # عرض رد الذكاء الاصطناعي
+        # البحث في الـ PDF (الـ Retrieval)
+        docs = db.similarity_search(prompt, k=2)
+        context = "\n".join([d.page_content for d in docs])
+        
+        # هنا الرد (ممكن تربطه بـ OpenAI API لو معاك Key، أو ترد بناءً على الـ context)
+        response = f"Based on my resume: {context[:300]}..." 
+        
         with st.chat_message("assistant"):
             st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
