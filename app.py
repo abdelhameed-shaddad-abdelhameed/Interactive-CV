@@ -113,7 +113,7 @@ with st.sidebar:
     
     st.divider()
     
-    cv_file = "ABDELHAMEED SHADDAD MANSOUR.pdf"
+    cv_file = "cv.pdf"
     if os.path.exists(cv_file):
         with open(cv_file, "rb") as pdf_file:
             st.download_button("📄 Download Resume (PDF)", data=pdf_file.read(), file_name="cv.pdf", mime="application/octet-stream")
