@@ -26,7 +26,7 @@ with st.sidebar:
     
     # زرار تحميل الـ PDF
     try:
-        with open("ABDELHAMEED_MANSOUR_CV.pdf", "rb") as pdf_file:
+        with open("ABDELHAMEED SHADDAD MANSOUR.pdf", "rb") as pdf_file:
             PDFbyte = pdf_file.read()
             st.download_button(
                 label="📄 Download Resume (PDF)",
