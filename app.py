@@ -1,222 +1,207 @@
 import streamlit as st
+import time
 
 # إعدادات الصفحة
-st.set_page_config(page_title="Abdelhameed Mansour | Interactive CV", page_icon="👨‍💻", layout="wide")
+st.set_page_config(page_title="A.Mansour | Terminal", page_icon="💻", layout="wide")
 
-# تصميم CSS مخصص - ثيم الـ Cyberpunk (نيون فسفوري)
+# تصميم CSS مخصص - ثيم الهاكر (مريح للعين)
 st.markdown("""
 <style>
-    /* استدعاء خط تكنولوجي */
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    /* خط الأكواد */
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap');
     
-    html, body, [class*="css"]  {
-        font-family: 'Share Tech Mono', monospace;
+    html, body, [class*="css"] {
+        font-family: 'Fira Code', monospace;
+        background-color: #0d1117; /* أسود مطفي مريح جداً زي GitHub Dark */
+        color: #c9d1d9; /* رمادي فاتح للقراءة المريحة */
     }
 
-    /* ألوان القائمة الجانبية */
+    /* تأثير الـ Scanline الخفيف للخلفية */
+    body::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 2;
+        background-size: 100% 2px, 3px 100%;
+        pointer-events: none;
+    }
+
+    /* القائمة الجانبية */
     [data-testid="stSidebar"] {
-        background-color: #090014; /* أسود بلمحة بنفسجي داكن */
-        border-right: 2px solid #bc13fe; /* خط موف فسفوري */
-        box-shadow: 2px 0 20px rgba(188, 19, 254, 0.2);
+        background-color: #010409;
+        border-right: 1px solid #00ff41; /* أخضر تيرمينال */
     }
 
-    /* العناوين (أخضر فسفوري) */
+    /* العناوين */
     h1, h2, h3 {
-        color: #39ff14 !important;
-        text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
+        color: #00ff41 !important; /* أخضر هاكر هادي */
     }
 
-    /* تصميم الزراير (أخضر وأسود) */
-    .stButton>button { 
-        width: 100%; 
-        background: transparent;
-        color: #39ff14; 
-        border: 1px solid #39ff14;
-        border-radius: 5px; 
-        font-weight: bold; 
-        box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
-        transition: all 0.3s ease;
-    }
-    .stButton>button:hover {
-        background: #39ff14;
-        color: #000;
-        box-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
-        border: 1px solid #39ff14;
-    }
-
-    /* كروت المشاريع (تأثير وهج أحمر وموف) */
+    /* كروت المشاريع */
     .project-card { 
-        background-color: #0d0d0d; 
+        background-color: #161b22; 
         padding: 20px; 
-        border-radius: 8px; 
-        border-left: 4px solid #ff007f; /* أحمر/بينك فسفوري */
-        box-shadow: 0 4px 15px rgba(255, 0, 127, 0.15); 
+        border-radius: 4px; 
+        border-left: 3px solid #00ff41; 
         margin-bottom: 15px; 
-        transition: transform 0.3s, box-shadow 0.3s;
+        border-top: 1px solid #30363d;
+        border-right: 1px solid #30363d;
+        border-bottom: 1px solid #30363d;
     }
-    .project-card:hover {
-        transform: translateY(-5px);
-        border-left: 4px solid #bc13fe; /* يتحول لموف عند الوقوف عليه */
-        box-shadow: 0 8px 25px rgba(188, 19, 254, 0.4);
-    }
-    .project-card p {
-        color: #d1d5db;
-        font-family: sans-serif; /* خط عادي للقراءة المريحة */
-    }
+    .project-card h3 { margin-top: 0; }
+    .project-card p { color: #8b949e; font-family: sans-serif; font-size: 14px; }
 
-    /* فقاعات المهارات (موف نيون) */
+    /* فقاعات المهارات */
     .skill-tag { 
         display: inline-block; 
-        background-color: rgba(188, 19, 254, 0.1); 
-        color: #bc13fe; 
-        border: 1px solid #bc13fe;
-        padding: 6px 15px; 
-        border-radius: 20px; 
-        margin: 5px; 
-        font-size: 14px; 
-        font-weight: bold;
-        box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
-        letter-spacing: 1px;
+        background-color: #000000; 
+        color: #00ff41; 
+        border: 1px solid #00ff41;
+        padding: 4px 10px; 
+        margin: 4px; 
+        font-size: 13px; 
     }
 
-    /* الفواصل */
-    hr {
-        border-color: #39ff14;
-        opacity: 0.3;
+    /* أزرار الروابط */
+    .stButton>button { 
+        background: #010409;
+        color: #00ff41; 
+        border: 1px solid #00ff41;
+        border-radius: 2px; 
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background: #00ff41;
+        color: #000;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------- القائمة الجانبية (Sidebar) -----------------
+# ----------------- القائمة الجانبية -----------------
 with st.sidebar:
-    # ⚠️ غير اسم 'profile.jpg' هنا لو رفعت صورتك باسم تاني
     try:
-        st.image("profile.jpg", width=180) 
+        st.image("profile.jpg", width=150) 
     except:
-        # صورة بديلة لو ملقاش صورتك
-        st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=180)
+        st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=150)
         
-    st.title("Abdelhameed Mansour")
-    st.markdown("<p style='color: #bc13fe; font-size: 18px;'>⚡ Python Automation & AI QA Engineer</p>", unsafe_allow_html=True)
+    st.title("root@amansour:~#")
+    st.markdown("<p style='color: #8b949e; font-size: 14px;'>Python Automation & AI QA</p>", unsafe_allow_html=True)
     
-    st.markdown("📍 **Location:** Cairo, Egypt")
-    st.markdown("📧 **Email:** abdelhameed.m91@gmail.com")
-    st.markdown("📱 **Phone:** +201069531984")
+    st.markdown("📍 **Loc:** Cairo, Egypt")
+    st.markdown("📧 **Mail:** abdelhameed.m91@gmail.com")
+    st.markdown("📱 **Tel:** +201069531984")
     
     st.divider()
     
-    # زرار تحميل الـ PDF
     try:
         with open("ABDELHAMEED SHADDAD MANSOUR.pdf", "rb") as pdf_file:
             PDFbyte = pdf_file.read()
-            st.download_button(
-                label="📄 DOWNLOAD SYSTEM_FILE_CV.PDF",
-                data=PDFbyte,
-                file_name="Abdelhameed_Mansour_Senior_AI_QA.pdf",
-                mime="application/octet-stream"
-            )
+            st.download_button("📄 ./download_cv.sh", data=PDFbyte, file_name="Abdelhameed_Mansour_CV.pdf", mime="application/octet-stream")
     except FileNotFoundError:
-        st.warning("⚠️ System File Missing: 'ABDELHAMEED_MANSOUR_CV.pdf'")
+        st.warning("⚠️ File 'ABDELHAMEED_MANSOUR_CV.pdf' not found.")
 
     st.divider()
-    st.markdown("🔗 **[INITIATE_LINKEDIN_CONNECTION](https://linkedin.com/in/abdelhameed-mansour-911034151/)**")
-    st.markdown("🐙 **[ACCESS_GITHUB_DATABANK](https://github.com/abdelhameed-shaddad-abdelhameed)**")
+    st.markdown("🔗 **[LinkedIn](https://linkedin.com/in/abdelhameed-mansour-911034151/)**")
+    st.markdown("🐙 **[GitHub](https://github.com/abdelhameed-shaddad-abdelhameed)**")
 
-# ----------------- المحتوى الرئيسي -----------------
+# ----------------- المحتوى الرئيسي (Tabs) -----------------
+tab1, tab2 = st.tabs(["[ ./portfolio.sh ]", "[ ./ai_assistant.py ]"])
 
-st.title(">> INITIALIZING INTERACTIVE PORTFOLIO_")
+# ---- التبويبة الأولى: البورتفوليو ----
+with tab1:
+    st.title(">> SYSTEM.INITIALIZED")
 
-# نبذة عنك
-st.header(">> SYSTEM.SUMMARY")
-st.write("""
-<div style='font-family: sans-serif; color: #e5e7eb; line-height: 1.6;'>
-A highly skilled Software Automation Engineer and Senior AI QA Specialist with a solid foundation in systems integration. I specialize in architecting test automation frameworks, building scalable Python tools, and evaluating Large Language Models (LLMs) for production-grade AI systems.
-<br><br>
-With extensive experience bridging the gap between technical execution and business logic, I don't just write code; I build robust integrations and verify complex logic. My expertise spans across designing Python automation scripts (Selenium, Playwright), training advanced AI models (Claude Code via Labelbox/Alignerr), and building interactive SaaS dashboards (Streamlit).
-</div>
-""", unsafe_allow_html=True)
-
-st.divider()
-
-# قسم المهارات
-st.header(">> CORE.MODULES")
-skills = ["Python (Expert)", "Prompt Engineering", "LLM Evaluation (RLHF)", "Playwright & Selenium", "Streamlit", "API Integrations", "C# & Windows Forms", "SQL Auditing", "Multi-tenant SaaS"]
-
-skills_html = "".join([f'<span class="skill-tag">{skill}</span>' for skill in skills])
-st.markdown(skills_html, unsafe_allow_html=True)
-
-st.divider()
-
-# قسم المشاريع
-st.header(">> EXECUTABLE.PROJECTS")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("""
-    <div class="project-card">
-        <h3 style="color: #ff007f;">🐋 WhaleTracker SaaS</h3>
-        <p>A multi-tenant live market intelligence dashboard using Python and Streamlit, featuring robust admin panels, tier-based access control, and real-time data visualization.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    st.link_button("EXECUTE GitHub_Link", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker-saas")
-
-    st.markdown("""
-    <div class="project-card">
-        <h3 style="color: #ff007f;">🤖 Web Automation Tool</h3>
-        <p>An advanced automation bot built with Python and Playwright. Simulates human behavior to interact with complex websites, bypass detection, and scrape data efficiently.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    st.link_button("EXECUTE GitHub_Link", "https://github.com/abdelhameed-shaddad-abdelhameed/Python-Web-Automation-Tool")
-
-with col2:
-    st.markdown("""
-    <div class="project-card">
-        <h3 style="color: #bc13fe;">🎯 WhaleHunter Pro</h3>
-        <p>Real-time digital asset monitoring engine built with Python and Streamlit for automated alert generation and secure data extraction.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    st.link_button("EXECUTE GitHub_Link", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker")
-
-    st.markdown("""
-    <div class="project-card">
-        <h3 style="color: #bc13fe;">🏪 Sweet-Shop POS</h3>
-        <p>A comprehensive desktop application for inventory and cart logic management utilizing C# and Windows Forms to streamline retail operations.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    st.link_button("EXECUTE GitHub_Link", "https://github.com/abdelhameed-shaddad-abdelhameed/Sweet-Shop-POS-System")
-
-st.divider()
-
-# قسم الخبرة
-st.header(">> EXPERIENCE.LOG")
-with st.expander("Senior AI QA Engineer | Alignerr / Labelbox Platform (Jan 2024 - Present)", expanded=True):
-    st.markdown("""
-    <div style='font-family: sans-serif; color: #d1d5db;'>
-    <ul>
-        <li>Executed high-level technical evaluations for Claude Code to refine model reasoning and coding capabilities.</li>
-        <li>Developed sophisticated multi-turn prompts to test production-ready engineering practices.</li>
-        <li>Conducted detailed technical audits of model outputs, ensuring code correctness and modularity.</li>
-    </ul>
+    st.header(">> whoami")
+    st.write("""
+    <div style='font-family: sans-serif; color: #c9d1d9; line-height: 1.6;'>
+    A highly skilled Software Automation Engineer and Senior AI QA Specialist with a solid foundation in systems integration. I specialize in architecting test automation frameworks, building scalable Python tools, and evaluating Large Language Models (LLMs) for production-grade AI systems.
+    <br><br>
+    My expertise spans across designing Python automation scripts (Selenium, Playwright), training advanced AI models (Claude Code via Labelbox/Alignerr), and building interactive SaaS dashboards (Streamlit).
     </div>
     """, unsafe_allow_html=True)
 
-with st.expander("Freelance Automation & Testing Engineer (Jan 2024 - Present)"):
-    st.markdown("""
-    <div style='font-family: sans-serif; color: #d1d5db;'>
-    <ul>
-        <li>Design and deploy custom Python automation scripts using Selenium and Playwright.</li>
-        <li>Build robust frameworks for cross-system data validation and execute backend data verification using complex SQL queries.</li>
-    </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    st.divider()
 
-with st.expander("Systems Integration & Operations Manager | New Cairo Cosmetics (Jan 2018 - Jan 2024)"):
-    st.markdown("""
-    <div style='font-family: sans-serif; color: #d1d5db;'>
-    <ul>
-        <li>Managed the digital transformation and complete ERP implementation (Odoo, Daftra) for supply chain operations.</li>
-        <li>Ensured 100% data accuracy across modules through rigorous auditing and workflow optimization.</li>
-    </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    st.header(">> core_modules.sys")
+    skills = ["Python (Expert)", "Prompt Engineering", "LLM Evaluation (RLHF)", "Playwright & Selenium", "Streamlit", "API Integrations", "C# & Windows Forms", "SQL Auditing"]
+    st.markdown("".join([f'<span class="skill-tag">{s}</span>' for s in skills]), unsafe_allow_html=True)
+
+    st.divider()
+
+    st.header(">> executable_projects.dir")
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("""
+        <div class="project-card">
+            <h3>🐋 WhaleTracker SaaS</h3>
+            <p>Multi-tenant market intelligence dashboard (Python/Streamlit) with tier-based access and real-time visualization.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.link_button("Run GitHub_Repo", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker-saas")
+
+        st.markdown("""
+        <div class="project-card">
+            <h3>🤖 Web Automation Tool</h3>
+            <p>Advanced Python/Playwright bot simulating human behavior to bypass detection and scrape data.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.link_button("Run GitHub_Repo", "https://github.com/abdelhameed-shaddad-abdelhameed/Python-Web-Automation-Tool")
+
+    with c2:
+        st.markdown("""
+        <div class="project-card">
+            <h3>🎯 WhaleHunter Pro</h3>
+            <p>Real-time digital asset monitoring engine for automated alerts and secure data extraction.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.link_button("Run GitHub_Repo", "https://github.com/abdelhameed-shaddad-abdelhameed/WhaleTracker")
+
+        st.markdown("""
+        <div class="project-card">
+            <h3>🏪 Sweet-Shop POS</h3>
+            <p>C# Windows Forms desktop application for comprehensive inventory and cart logic management.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.link_button("Run GitHub_Repo", "https://github.com/abdelhameed-shaddad-abdelhameed/Sweet-Shop-POS-System")
+
+
+# ---- التبويبة الثانية: AI Chatbot ----
+with tab2:
+    st.title(">> TERMINAL_AI_AGENT")
+    st.caption("Ask me anything about Abdelhameed's skills, experience, or projects.")
+
+    # تهيئة الذاكرة للشات
+    if "messages" not in st.session_state:
+        st.session_state.messages = [{"role": "assistant", "content": "Hello! I am an AI trained on Abdelhameed Mansour's resume. Do you want to know about his **Skills**, **Experience**, or **Projects**?"}]
+
+    # عرض الرسايل القديمة
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # استقبال سؤال جديد
+    if prompt := st.chat_input("Type your command here (e.g., 'skills', 'experience')..."):
+        # عرض سؤال المستخدم
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # الرد الآلي بناءً على الكلمات المفتاحية
+        prompt_lower = prompt.lower()
+        if "skill" in prompt_lower or "tech" in prompt_lower:
+            response = "Abdelhameed's core skills include **Python (Expert)**, **Prompt Engineering**, **LLM Evaluation (RLHF)**, **Playwright/Selenium**, **Streamlit**, and **API Integrations**. He also has a strong background in SQL and C#."
+        elif "experience" in prompt_lower or "work" in prompt_lower or "job" in prompt_lower:
+            response = "He is currently a **Senior AI QA Engineer** on platforms like Alignerr and Labelbox, evaluating Claude Code. He also works as a **Freelance Automation Engineer** building Python bots. Previously, he co-founded a cosmetics company where he managed ERP integrations (Odoo/Daftra)."
+        elif "project" in prompt_lower or "portfolio" in prompt_lower:
+            response = "His top projects include **WhaleTracker SaaS** (a multi-tenant Streamlit dashboard), **WhaleHunter Pro** (a real-time blockchain monitoring tool), and an advanced **Python Web Automation Bot**."
+        elif "contact" in prompt_lower or "email" in prompt_lower or "hire" in prompt_lower:
+            response = "You can reach him via email at **abdelhameed.m91@gmail.com** or call **+201069531984**."
+        else:
+            response = "I'm a simulated AI Agent. I understand keywords like **Skills**, **Experience**, **Projects**, and **Contact**. Could you specify what you'd like to know about Abdelhameed?"
+
+        # عرض رد الذكاء الاصطناعي
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
